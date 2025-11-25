@@ -3,6 +3,8 @@ package a1_2201040087;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -69,15 +71,19 @@ public class MainApp extends WindowAdapter implements ActionListener {
         rightPanel.add(btnAddStudent);
         rightPanel.add(btnAddCourse);
         rightPanel.add(btnAddScore);
-        // Thêm một panel rỗng để đẩy các nút lên trên (nếu cần), hoặc để trống
 
-        // 4. Tạo bảng dữ liệu (Center)
-        // TableModel giúp quản lý dữ liệu dễ dàng hơn
-        tableModel = new DefaultTableModel();
+        // Tạo bảng dữ liệu
+        tableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return getColumnName(column).equalsIgnoreCase("Action");
+            }
+        };
         dataTable = new JTable(tableModel);
+        dataTable.setRowHeight(25);
         JScrollPane scrollPane = new JScrollPane(dataTable);
 
-        // 5. Thêm các vùng vào cửa sổ chính
+
         frame.add(topPanel, BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.add(rightPanel, BorderLayout.EAST);
@@ -95,6 +101,21 @@ public class MainApp extends WindowAdapter implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
         System.out.println(command);
+        if (command.equalsIgnoreCase("students")){
+            loadStudentData();
+        } else if (command.equalsIgnoreCase("courses")){
+            loadCourseData();
+        } else if (command.equalsIgnoreCase("scores")) {
+            loadScoreData();
+        } else if (command.equalsIgnoreCase("add student")) {
+
+        } else if (command.equalsIgnoreCase("add course")) {
+
+        } else if (command.equalsIgnoreCase("add score")) {
+
+        } else if (command.equalsIgnoreCase("delete")) {
+
+        }
     }
 
 //    private void addEvents() {
@@ -156,6 +177,9 @@ public class MainApp extends WindowAdapter implements ActionListener {
         tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
         tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
         tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
+
+        dataTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
+        dataTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox()));
     }
 
     private void loadCourseData() {
@@ -164,22 +188,93 @@ public class MainApp extends WindowAdapter implements ActionListener {
 
         tableModel.addColumn("Course ID");
         tableModel.addColumn("Subject");
-        tableModel.addColumn("Credits");
+        tableModel.addColumn("Action");
 
-        tableModel.addRow(new Object[]{"C001", "Java Programming", 3});
-        tableModel.addRow(new Object[]{"C002", "Database", 4});
+        tableModel.addRow(new Object[]{"C001", "Java Programming", "delete"});
+        tableModel.addRow(new Object[]{"C002", "Database", "delete"});
+
+        dataTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
+        dataTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox()));
+
     }
 
     private void loadScoreData() {
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
 
+        tableModel.addColumn("ID");
         tableModel.addColumn("Student ID");
         tableModel.addColumn("Course ID");
         tableModel.addColumn("Score");
+        tableModel.addColumn("Action");
 
-        tableModel.addRow(new Object[]{"2201040210", "C001", 8.5});
-        tableModel.addRow(new Object[]{"2201040011", "C002", 7.0});
+        tableModel.addRow(new Object[]{"1", "2201040210", "C001", 8.5,"delete"});
+        tableModel.addRow(new Object[]{"2", "2201040011", "C002", 7.0,"delete"});
+
+        dataTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
+        dataTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
+
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+            setText((value == null) ? "" : value.toString());
+            return this;
+        }
+    }
+
+    class ButtonEditor extends DefaultCellEditor {
+        protected JButton button;
+        private String label;
+        private boolean isPushed;
+        private int currentRow; // Lưu lại dòng đang bấm
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+
+            // Khi nút được bấm
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    fireEditingStopped(); // Báo cho bảng biết là đã dừng edit
+
+                    // Xử lý xóa dòng ở đây
+                    int confirm = JOptionPane.showConfirmDialog(frame,
+                            "Are you sure you want to delete row " + currentRow + "?",
+                            "Confirm Delete", JOptionPane.YES_NO_OPTION);
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        // Xóa dòng khỏi model
+                        if (currentRow >= 0 && currentRow < tableModel.getRowCount()) {
+                            tableModel.removeRow(currentRow);
+                        }
+                    }
+                }
+            });
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            label = (value == null) ? "" : value.toString();
+            button.setText(label);
+            currentRow = row;
+            isPushed = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            isPushed = false;
+            return label;
+        }
     }
 
     public static void main(String[] args) {

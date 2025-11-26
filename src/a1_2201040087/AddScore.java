@@ -81,7 +81,7 @@ public class AddScore extends WindowAdapter implements ActionListener {
         // Vô hiệu hóa nút nếu không có Student hoặc Course để chọn
         if (studentIds.isEmpty() || courseIds.isEmpty()) {
             btnAdd.setEnabled(false);
-            buttonPanel.add(new JLabel("Cần ít nhất 1 Student và 1 Course."));
+            buttonPanel.add(new JLabel("Need at least 1 student and 1 course."));
         }
         buttonPanel.add(btnAdd);
 

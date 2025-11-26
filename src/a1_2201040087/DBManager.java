@@ -227,7 +227,7 @@ public class DBManager {
     /**
      * Xóa một bản ghi theo tên bảng và ID chính.
      */
-    public static void deleteRecord(String tableName, String recordId) {
+    public static String deleteRecord(String tableName, String recordId) {
         String sql = "DELETE FROM " + tableName + " WHERE id = ?";
 
         try {
@@ -248,19 +248,25 @@ public class DBManager {
                     pstmt.setLong(1, id);
                 } catch (NumberFormatException e) {
                     System.err.println("Lỗi chuyển đổi ID: ID " + recordId + " không phải là số nguyên.");
-                    return;
+                    return "Invalid ID format";
                 }
             }
 
             int rowsAffected = pstmt.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Đã xóa bản ghi " + recordId + " từ bảng " + tableName);
+                return null;
             } else {
                 System.out.println("Không tìm thấy bản ghi " + recordId + " để xóa.");
+                return "Record not found";
             }
 
         } catch (SQLException e) {
             System.err.println("Lỗi xóa bản ghi: " + e.getMessage());
+            if (e.getMessage().contains("FOREIGN KEY")) {
+                return "FOREIGN_KEY_ERROR";
+            }
+            return e.getMessage();
         }
     }
 }

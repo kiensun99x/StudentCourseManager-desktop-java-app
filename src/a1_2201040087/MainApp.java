@@ -106,7 +106,6 @@ public class MainApp extends WindowAdapter implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        System.out.println(command);
         if (command.equalsIgnoreCase("students")){
             loadStudentData();
         } else if (command.equalsIgnoreCase("courses")){
@@ -163,10 +162,6 @@ public class MainApp extends WindowAdapter implements ActionListener {
 
         List<String[]> data = DBManager.getAllCourses();
         for (String[] row : data) {
-            // Thêm một cột phụ là "Delete" ở cuối để renderer hoạt động
-//            String[] fullRow = new String[row.length + 1];
-//            System.arraycopy(row, 0, fullRow, 0, row.length);
-//            fullRow[row.length] = "Delete";
             tableModel.addRow(row);
         }
 
@@ -232,11 +227,34 @@ public class MainApp extends WindowAdapter implements ActionListener {
                     String recordId = dataTable.getValueAt(currentRow, 0).toString();
 
                     int confirm = JOptionPane.showConfirmDialog(frame,
-                            "Bạn có chắc muốn xóa bản ghi ID " + recordId + " khỏi bảng " + currentTableName + " không?",
-                            "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+                            "Are you sure deleting the record: " + recordId + " from table: " + currentTableName + " ?",
+                            "Confirm delete", JOptionPane.YES_NO_OPTION);
 
                     if (confirm == JOptionPane.YES_OPTION) {
-                        DBManager.deleteRecord(currentTableName, recordId);
+                        String result = DBManager.deleteRecord(currentTableName, recordId);
+                        //thong bao loi
+                        if (result != null) {
+                            if (result.equals("FOREIGN_KEY_ERROR")) {
+                                JOptionPane.showMessageDialog(frame,
+                                        "This record cannot be deleted because related scores still exist.\n" +
+                                                "Please delete the associated score records first.",
+                                        "Delete Failed",
+                                        JOptionPane.ERROR_MESSAGE
+                                );
+                            } else {
+                                JOptionPane.showMessageDialog(frame,
+                                        "Error: " + result,
+                                        "Delete Failed",
+                                        JOptionPane.ERROR_MESSAGE
+                                );
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(frame,
+                                    "Record deleted successfully.",
+                                    "Success",
+                                    JOptionPane.INFORMATION_MESSAGE
+                            );
+                        }
 
                         // Refresh bảng
                         if (currentTableName.equals("Students")) {

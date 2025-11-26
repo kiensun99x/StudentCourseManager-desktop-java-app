@@ -18,6 +18,9 @@ public class AddScore extends WindowAdapter implements ActionListener {
     private JButton btnAdd;
     private MainApp mainApp;
 
+    private List<String> studentIds;
+    private List<String> courseIds;
+
     public AddScore(JFrame parent, MainApp mainApp){
         this.parentGUI = parent;
         this.mainApp = mainApp;
@@ -35,11 +38,11 @@ public class AddScore extends WindowAdapter implements ActionListener {
         List<String[]> courses = DBManager.getAllCourses();
 
         //filter
-        List<String> studentIds = students.stream()
+        studentIds = students.stream()
                 .map(arr -> arr[0])   // lấy ID
                 .toList();
 
-        List<String> courseIds = courses.stream()
+        courseIds = courses.stream()
                 .map(arr -> arr[0])
                 .toList();
 
@@ -51,11 +54,17 @@ public class AddScore extends WindowAdapter implements ActionListener {
         // Dropdown Student ID
         formPanel.add(new JLabel("Student ID:"));
         cbStudentId = new JComboBox<>(studentIds.toArray(new String[0]));
+        cbStudentId.setEditable(true);
+        cbStudentId.setSelectedItem(null);
+        AutoCompleteCombo.enable(cbStudentId, studentIds);
         formPanel.add(cbStudentId);
 
         // Dropdown Course ID
         formPanel.add(new JLabel("Course ID:"));
         cbCourseId = new JComboBox<>(courseIds.toArray(new String[0]));
+        cbCourseId.setEditable(true);
+        cbCourseId.setSelectedItem(null);
+        AutoCompleteCombo.enable(cbCourseId, courseIds);
         formPanel.add(cbCourseId);
 
         // Input Score
@@ -102,6 +111,16 @@ public class AddScore extends WindowAdapter implements ActionListener {
         // Kiểm tra lựa chọn và rỗng
         if (studentId == null || courseId == null || scoreStr.isEmpty()) {
             JOptionPane.showMessageDialog(win, "Please select Student/Course and enter a Score.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!studentIds.contains(studentId)) {
+            JOptionPane.showMessageDialog(win, "Please select an existing Student.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!courseIds.contains(courseId)) {
+            JOptionPane.showMessageDialog(win, "Please select an existing Course.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

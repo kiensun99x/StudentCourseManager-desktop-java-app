@@ -168,6 +168,42 @@ public class DBManager {
         return data;
     }
 
+    public static void addStudent(long id, String name) throws SQLException {
+        String sql = "INSERT INTO Students (id, name) VALUES (?, ?)";
+
+
+        Connection conn = getConnection();
+        Statement stmt = conn.createStatement();
+        stmt.execute("PRAGMA foreign_keys = ON;");
+        stmt.close();
+
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        pstmt.setLong(1, id);
+        pstmt.setString(2, name);
+        pstmt.executeUpdate();
+
+    }
+
+    /**
+     * Thêm một môn học mới vào bảng Courses.
+     */
+    public static void addCourse(String id, String name) throws SQLException {
+        // Lưu ý: Course ID là TEXT, không phải INTEGER
+        String sql = "INSERT INTO Courses (id, name) VALUES (?, ?)";
+
+        Connection conn = getConnection();
+        Statement stmt = conn.createStatement();
+        stmt.execute("PRAGMA foreign_keys = ON;");
+        stmt.close();
+
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, id);
+        pstmt.setString(2, name);
+        pstmt.executeUpdate();
+
+    }
+
     // --- HÀM XÓA DỮ LIỆU ---
 
     /**
@@ -179,7 +215,7 @@ public class DBManager {
         try {
             Connection conn = getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute("PRAGMA foreign_keys = ON;");  // quan trọng: phải chạy trước các lệnh khác
+            stmt.execute("PRAGMA foreign_keys = ON;");
             stmt.close();
             PreparedStatement pstmt = conn.prepareStatement(sql);
 

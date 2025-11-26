@@ -115,9 +115,11 @@ public class MainApp extends WindowAdapter implements ActionListener {
         } else if (command.equalsIgnoreCase("scores")) {
             loadScoreData();
         } else if (command.equalsIgnoreCase("add student")) {
-
+            AddStudent studentDialog = new AddStudent(frame, this);
+            studentDialog.setVisible(true);
         } else if (command.equalsIgnoreCase("add course")) {
-
+            AddCourse courseDialog = new AddCourse(frame, this);
+            courseDialog.setVisible(true);
         } else if (command.equalsIgnoreCase("add score")) {
 
         } else if (command.equalsIgnoreCase("delete")) {
@@ -127,7 +129,7 @@ public class MainApp extends WindowAdapter implements ActionListener {
 
     // --- Các hàm giả lập dữ liệu (Sau này bạn sẽ thay bằng JDBC kết nối database) ---
 
-    private void loadStudentData() {
+    protected void loadStudentData() {
         // Xóa dữ liệu cũ và cột cũ
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
@@ -148,7 +150,7 @@ public class MainApp extends WindowAdapter implements ActionListener {
         dataTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox()));
     }
 
-    private void loadCourseData() {
+    protected void loadCourseData() {
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
         currentTableName = "Courses";

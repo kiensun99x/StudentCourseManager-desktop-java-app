@@ -24,7 +24,7 @@ public class DBManager {
      */
     public static void setupDatabase() {
         String sqlStudents = "CREATE TABLE IF NOT EXISTS Students ("
-                + " id INTEGER PRIMARY KEY, "
+                + " id TEXT PRIMARY KEY, "
                 + " name TEXT NOT NULL);";
 
         String sqlCourses = "CREATE TABLE IF NOT EXISTS Courses ("
@@ -33,7 +33,7 @@ public class DBManager {
 
         String sqlScores = "CREATE TABLE IF NOT EXISTS Scores ("
                 + " id INTEGER PRIMARY KEY, "
-                + " student_id INTEGER NOT NULL, "
+                + " student_id TEXT NOT NULL, "
                 + " course_id TEXT NOT NULL, "
                 + " score REAL NOT NULL, "
                 + " FOREIGN KEY (student_id) REFERENCES Students(id), "
@@ -62,10 +62,10 @@ public class DBManager {
      */
     public static void initializeData() {
         String insertStudents = "INSERT INTO Students (id, name) VALUES " +
-                "(2201040210, 'John'), " +
-                "(2201040011, 'David'), " +
-                "(2201040005, 'Alex'), " +
-                "(2201040100, 'Mary');";
+                "('2201040210', 'John'), " +
+                "('2201040011', 'David'), " +
+                "('2201040005', 'Alex'), " +
+                "('2201040100', 'Mary');";
         String insertCourses = "INSERT INTO Courses (id, name) VALUES " +
                 "('61FIT3JSD', 'Java Programming'), " +
                 "('61FIT2DBS', 'Database System');";
@@ -184,7 +184,7 @@ public class DBManager {
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
             // KIỂM TRA TÊN BẢNG ĐỂ DÙNG setString HOẶC setInt
-            if (tableName.equalsIgnoreCase("Courses")) {
+            if (!tableName.equalsIgnoreCase("Scores")) {
                 // Courses có ID là TEXT (ví dụ: '61FIT3JSD')
                 pstmt.setString(1, recordId);
             } else {

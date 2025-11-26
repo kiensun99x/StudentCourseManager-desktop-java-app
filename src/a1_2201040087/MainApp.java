@@ -134,6 +134,7 @@ public class MainApp extends WindowAdapter implements ActionListener {
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
         currentTableName = "Students";
+        radStudents.setSelected(true);
 
         // Thêm cột cho bảng Student
         tableModel.addColumn("ID");
@@ -154,6 +155,7 @@ public class MainApp extends WindowAdapter implements ActionListener {
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
         currentTableName = "Courses";
+        radCourses.setSelected(true);
 
         tableModel.addColumn("Course ID");
         tableModel.addColumn("Subject");
@@ -180,7 +182,7 @@ public class MainApp extends WindowAdapter implements ActionListener {
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
         currentTableName = "Scores";
-
+        radScores.setSelected(true);
 
         tableModel.addColumn("ID");
         tableModel.addColumn("Student ID");

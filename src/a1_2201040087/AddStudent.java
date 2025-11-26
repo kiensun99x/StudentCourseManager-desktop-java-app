@@ -57,36 +57,6 @@ public class AddStudent extends WindowAdapter implements ActionListener {
     public void display(){
         win.setVisible(true);
     }
-//    public AddStudent(JFrame parent, MainApp mainApp) {
-//        super(parent, "Add New Student", true);
-//        this.mainApp = mainApp;
-//        setLayout(new BorderLayout(10, 10));
-//        setSize(350, 200);
-//        setLocationRelativeTo(parent);
-//
-//        // --- Panel Form ---
-//        JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-//        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-//
-//        formPanel.add(new JLabel("Student ID (10 digits):"));
-//        txtId = new JTextField(10);
-//        formPanel.add(txtId);
-//
-//        formPanel.add(new JLabel("Student Name:"));
-//        txtName = new JTextField(10);
-//        formPanel.add(txtName);
-//
-//        add(formPanel, BorderLayout.CENTER);
-//
-//        // --- Panel Button ---
-//        JPanel buttonPanel = new JPanel();
-//        btnAdd = new JButton("Add Student");
-//        btnAdd.addActionListener(this);
-//        buttonPanel.add(btnAdd);
-//
-//        add(buttonPanel, BorderLayout.SOUTH);
-//        setResizable(false);
-//    }
 
     @Override
     public void actionPerformed(ActionEvent e) {

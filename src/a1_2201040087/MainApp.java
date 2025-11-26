@@ -12,7 +12,6 @@ import java.awt.event.WindowAdapter;
 
 public class MainApp extends WindowAdapter implements ActionListener {
     private JFrame frame;
-    // Khai báo các thành phần giao diện
     private JRadioButton radStudents, radCourses, radScores;
     private ButtonGroup radioGroup;
     private JTable dataTable;
@@ -121,7 +120,8 @@ public class MainApp extends WindowAdapter implements ActionListener {
             AddCourse courseDialog = new AddCourse(frame, this);
             courseDialog.display();
         } else if (command.equalsIgnoreCase("add score")) {
-
+            AddScore scoreDialog = new AddScore(frame, this);
+            scoreDialog.display();
         } else if (command.equalsIgnoreCase("delete")) {
 
         }
@@ -176,7 +176,7 @@ public class MainApp extends WindowAdapter implements ActionListener {
 
     }
 
-    private void loadScoreData() {
+    protected void loadScoreData() {
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
         currentTableName = "Scores";

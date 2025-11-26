@@ -204,6 +204,24 @@ public class DBManager {
 
     }
 
+    public static void addScore(String studentId, String courseId, double score) throws SQLException {
+        // Lưu ý: Score ID là khóa chính tự tăng (không cần truyền vào)
+        String sql = "INSERT INTO Scores (student_id, course_id, score) VALUES (?, ?, ?)";
+
+        Connection conn = getConnection();
+        Statement stmt = conn.createStatement();
+        stmt.execute("PRAGMA foreign_keys = ON;");
+        stmt.close();
+
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        // Dùng setString cho studentId (long) và courseId (text) vì cột khóa ngoại là TEXT/INTEGER linh hoạt trong SQLite
+        pstmt.setString(1, studentId);
+        pstmt.setString(2, courseId);
+        pstmt.setDouble(3, score);
+        pstmt.executeUpdate();
+    }
+
     // --- HÀM XÓA DỮ LIỆU ---
 
     /**

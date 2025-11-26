@@ -3,6 +3,7 @@ package a1_2201040087;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.event.ActionEvent;
@@ -17,8 +18,14 @@ public class MainApp extends WindowAdapter implements ActionListener {
     private JTable dataTable;
     private DefaultTableModel tableModel;
     private JButton btnAddStudent, btnAddCourse, btnAddScore;
+    private String currentTableName = "Students";
 
     public MainApp() {
+        DBManager.setupDatabase();
+        createGUI();
+    }
+
+    public void createGUI(){
         frame = new JFrame();
         // Window setting
         frame.setTitle("F2025 JSD Assignment");
@@ -118,65 +125,24 @@ public class MainApp extends WindowAdapter implements ActionListener {
         }
     }
 
-//    private void addEvents() {
-//        // Sự kiện khi bấm vào Radio Button
-//        ActionListener radioListener = new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                if (radStudents.isSelected()) {
-//                    loadStudentData();
-//                } else if (radCourses.isSelected()) {
-//                    loadCourseData();
-//                } else if (radScores.isSelected()) {
-//                    loadScoreData();
-//                }
-//            }
-//        };
-//
-//        radStudents.addActionListener(radioListener);
-//        radCourses.addActionListener(radioListener);
-//        radScores.addActionListener(radioListener);
-//
-//        // Sự kiện cho các nút Add (Chỉ hiện thông báo demo)
-//        btnAddStudent.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Open window: Add Student"));
-//        btnAddCourse.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Open window: Add Course"));
-//        btnAddScore.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Open window: Add Score"));
-//    }
-
     // --- Các hàm giả lập dữ liệu (Sau này bạn sẽ thay bằng JDBC kết nối database) ---
 
     private void loadStudentData() {
         // Xóa dữ liệu cũ và cột cũ
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
+        currentTableName = "Students";
 
         // Thêm cột cho bảng Student
         tableModel.addColumn("ID");
         tableModel.addColumn("Name");
         tableModel.addColumn("Action");
 
-        // Thêm dữ liệu giả giống hình ảnh
-        tableModel.addRow(new Object[]{"2201040210", "John", "Delete"});
-        tableModel.addRow(new Object[]{"2201040011", "David", "Delete"});
-        tableModel.addRow(new Object[]{"2201040005", "Alex", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
-        tableModel.addRow(new Object[]{"2201040100", "Mary", "Delete"});
+        // Lấy dữ liệu từ DBManager
+        List<String[]> data = DBManager.getAllStudents();
+        for (String[] row : data) {
+            tableModel.addRow(row);
+        }
 
         dataTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
         dataTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox()));
@@ -185,13 +151,23 @@ public class MainApp extends WindowAdapter implements ActionListener {
     private void loadCourseData() {
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
+        currentTableName = "Courses";
 
         tableModel.addColumn("Course ID");
         tableModel.addColumn("Subject");
         tableModel.addColumn("Action");
 
-        tableModel.addRow(new Object[]{"C001", "Java Programming", "delete"});
-        tableModel.addRow(new Object[]{"C002", "Database", "delete"});
+        List<String[]> data = DBManager.getAllCourses();
+        for (String[] row : data) {
+            // Thêm một cột phụ là "Delete" ở cuối để renderer hoạt động
+//            String[] fullRow = new String[row.length + 1];
+//            System.arraycopy(row, 0, fullRow, 0, row.length);
+//            fullRow[row.length] = "Delete";
+            tableModel.addRow(row);
+        }
+
+//        tableModel.addRow(new Object[]{"C001", "Java Programming", "delete"});
+//        tableModel.addRow(new Object[]{"C002", "Database", "delete"});
 
         dataTable.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
         dataTable.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox()));
@@ -201,6 +177,8 @@ public class MainApp extends WindowAdapter implements ActionListener {
     private void loadScoreData() {
         tableModel.setRowCount(0);
         tableModel.setColumnCount(0);
+        currentTableName = "Scores";
+
 
         tableModel.addColumn("ID");
         tableModel.addColumn("Student ID");
@@ -208,8 +186,10 @@ public class MainApp extends WindowAdapter implements ActionListener {
         tableModel.addColumn("Score");
         tableModel.addColumn("Action");
 
-        tableModel.addRow(new Object[]{"1", "2201040210", "C001", 8.5,"delete"});
-        tableModel.addRow(new Object[]{"2", "2201040011", "C002", 7.0,"delete"});
+        List<String[]> data = DBManager.getAllScores();
+        for (String[] row : data) {
+            tableModel.addRow(row);
+        }
 
         dataTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
         dataTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
@@ -232,48 +212,64 @@ public class MainApp extends WindowAdapter implements ActionListener {
     class ButtonEditor extends DefaultCellEditor {
         protected JButton button;
         private String label;
+        private int currentRow;
         private boolean isPushed;
-        private int currentRow; // Lưu lại dòng đang bấm
 
         public ButtonEditor(JCheckBox checkBox) {
             super(checkBox);
             button = new JButton();
             button.setOpaque(true);
 
-            // Khi nút được bấm
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped(); // Báo cho bảng biết là đã dừng edit
+                    fireEditingStopped(); // Gọi để JTable ngừng chế độ chỉnh sửa
 
-                    // Xử lý xóa dòng ở đây
+                    String recordId = dataTable.getValueAt(currentRow, 0).toString();
+
                     int confirm = JOptionPane.showConfirmDialog(frame,
-                            "Are you sure you want to delete row " + currentRow + "?",
-                            "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                            "Bạn có chắc muốn xóa bản ghi ID " + recordId + " khỏi bảng " + currentTableName + " không?",
+                            "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
 
                     if (confirm == JOptionPane.YES_OPTION) {
-                        // Xóa dòng khỏi model
-                        if (currentRow >= 0 && currentRow < tableModel.getRowCount()) {
-                            tableModel.removeRow(currentRow);
+                        DBManager.deleteRecord(currentTableName, recordId);
+
+                        // Refresh bảng
+                        if (currentTableName.equals("Students")) {
+                            loadStudentData();
+                        } else if (currentTableName.equals("Courses")) {
+                            loadCourseData();
+                        } else if (currentTableName.equals("Scores")) {
+                            loadScoreData();
                         }
                     }
                 }
             });
         }
 
+        @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
             label = (value == null) ? "" : value.toString();
             button.setText(label);
             currentRow = row;
-            isPushed = true;
+            isPushed = true; // <-- GÁN TRUE KHI CHỈNH SỬA BẮT ĐẦU
             return button;
         }
 
         @Override
+        public boolean isCellEditable(java.util.EventObject eo) {
+            // Luôn trả về true để cho phép kích hoạt Editor ngay lập tức khi click
+            return true;
+        }
+
+        @Override
         public Object getCellEditorValue() {
-            isPushed = false;
-            return label;
+            if (isPushed) {
+                // Nếu nút được bấm, trả về giá trị label (thường là "Delete")
+            }
+            isPushed = false; // <-- GÁN FALSE SAU KHI LẤY GIÁ TRỊ
+            return label; // Hoặc giá trị mặc định của ô nếu không phải nút
         }
     }
 

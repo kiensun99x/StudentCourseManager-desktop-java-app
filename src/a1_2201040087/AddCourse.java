@@ -4,21 +4,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-public class AddCourse extends JDialog implements ActionListener {
+public class AddCourse extends WindowAdapter implements ActionListener {
+    private JFrame win;
+    private JFrame parentGUI;
     private JTextField txtId;
     private JTextField txtName;
     private JButton btnAdd;
     private MainApp mainApp;
 
     public AddCourse(JFrame parent, MainApp mainApp) {
-        super(parent, "Add New Course", true);
+        this.parentGUI = parent;
         this.mainApp = mainApp;
-        setLayout(new BorderLayout(10, 10));
-        setSize(350, 200);
-        setLocationRelativeTo(parent);
+        createGUI();
+    }
+
+    private void createGUI(){
+        win = new JFrame("Add New Course");
+        win.setLayout(new BorderLayout(10, 10));
+        win.setSize(350, 200);
+        win.setLocationRelativeTo(parentGUI);
 
         // --- Panel Form ---
         JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
@@ -32,7 +40,7 @@ public class AddCourse extends JDialog implements ActionListener {
         txtName = new JTextField(10);
         formPanel.add(txtName);
 
-        add(formPanel, BorderLayout.CENTER);
+        win.add(formPanel, BorderLayout.CENTER);
 
         // --- Panel Button ---
         JPanel buttonPanel = new JPanel();
@@ -40,8 +48,14 @@ public class AddCourse extends JDialog implements ActionListener {
         btnAdd.addActionListener(this);
         buttonPanel.add(btnAdd);
 
-        add(buttonPanel, BorderLayout.SOUTH);
-        setResizable(false);
+        win.add(buttonPanel, BorderLayout.SOUTH);
+        win.setResizable(false);
+
+        display();
+    }
+
+    public void display(){
+        win.setVisible(true);
     }
 
     @Override
@@ -57,7 +71,7 @@ public class AddCourse extends JDialog implements ActionListener {
 
         // 1. Kiểm tra rỗng
         if (id.isEmpty() || name.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Course ID and Name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(win, "Course ID and Name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -65,7 +79,7 @@ public class AddCourse extends JDialog implements ActionListener {
         //
         Pattern pattern = Pattern.compile("^[a-zA-Z0-9]{9}$");
         if (!pattern.matcher(id).matches()) {
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(win,
                     "Course ID must be 9 characters long and contain only letters and numbers (e.g., 61FIT3JSD).",
                     "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -74,7 +88,7 @@ public class AddCourse extends JDialog implements ActionListener {
         // 3. Validate Name chỉ chứa chữ cái (Unicode) và khoảng trắng
         Pattern namePattern = Pattern.compile("^[\\p{L}\\s]+$");
         if (!namePattern.matcher(name).matches()) {
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(win,
                     "Name can only contain letters and spaces.",
                     "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -84,20 +98,20 @@ public class AddCourse extends JDialog implements ActionListener {
         // 3. Thực hiện thêm vào DB
         try {
             DBManager.addCourse(id, name);
-            JOptionPane.showMessageDialog(this, "Course " + name + " added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(win, "Course " + name + " added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
             // 4. Refresh bảng Courses trong cửa sổ MainApp
             mainApp.loadCourseData();
 
             // Đóng cửa sổ dialog
-            dispose();
-
+            win.dispose();
+            mainApp.loadCourseData();
         } catch (SQLException ex) {
             // Lỗi SQL có thể là do trùng ID (Primary Key Constraint)
             if (ex.getMessage().contains("UNIQUE constraint failed")) {
-                JOptionPane.showMessageDialog(this, "Error: Course ID " + id + " already exists.", "DB Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(win, "Error: Course ID " + id + " already exists.", "DB Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage(), "DB Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(win, "Database Error: " + ex.getMessage(), "DB Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

@@ -116,10 +116,10 @@ public class MainApp extends WindowAdapter implements ActionListener {
             loadScoreData();
         } else if (command.equalsIgnoreCase("add student")) {
             AddStudent studentDialog = new AddStudent(frame, this);
-            studentDialog.setVisible(true);
+            studentDialog.display();
         } else if (command.equalsIgnoreCase("add course")) {
             AddCourse courseDialog = new AddCourse(frame, this);
-            courseDialog.setVisible(true);
+            courseDialog.display();
         } else if (command.equalsIgnoreCase("add score")) {
 
         } else if (command.equalsIgnoreCase("delete")) {
